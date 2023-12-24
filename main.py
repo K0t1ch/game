@@ -116,6 +116,9 @@ def move(player, movement):
                                 or level_map[y][x + 1] == '@'):
             player.move(x + 1, y)
 
+        elif x < level_x - 1 and level_map[y][x + 1] == '$':
+            shop()
+
 
 def generate_level(level):
     new_player, x, y = None, None, None
@@ -153,7 +156,14 @@ player, level_x, level_y = generate_level(load_level('map.txt'))
 
 
 def start_screen():
-    intro_text = ["Нажмите на любую кнопку чтобы начать",
+    intro_text = ["Аллистар: Посмертная афёра", "",
+                  "Beta 1.0.0",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "Нажмите на любую кнопку чтобы начать",
                   "Правила"]
 
     fon = pygame.transform.scale(load_image('fon.jpg'), (1920, 1080))
@@ -176,6 +186,40 @@ def start_screen():
             elif event.type == pygame.KEYDOWN:
                     return  # начинаем игру
 
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def shop():
+    screen.fill('black')
+    fon = pygame.transform.scale(load_image('inside_b.png'), (1920, 1080))
+    screen.blit(fon, (0, 0))
+
+    health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
+    screen.blit(health, (110, 670))
+
+    health = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
+    screen.blit(health, (410, 670))
+
+    health = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
+    screen.blit(health, (710, 670))
+
+    font = pygame.font.Font(None, 70)
+    text = font.render("Таинственная лавка!", True, (255, 255, 0))
+    text_x = 700
+    text_y = 170
+    text_w = text.get_width()
+    text_h = text.get_height()
+    screen.blit(text, (text_x, text_y))
+    pygame.draw.rect(screen, (255, 255, 0), (text_x - 10, text_y - 10,
+                                           text_w + 20, text_h + 20), 5)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
 
