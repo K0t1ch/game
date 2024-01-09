@@ -1,6 +1,7 @@
 import pygame
 import sys
 import os
+from itertools import cycle
 
 FPS = 50
 
@@ -155,40 +156,163 @@ def generate_level(level):
 player, level_x, level_y = generate_level(load_level('map.txt'))
 
 
-def start_screen():
-    intro_text = ["Аллистар: Посмертная афёра", "",
-                  "Beta 1.0.0",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "Нажмите на любую кнопку чтобы начать",
-                  "Правила"]
+class LoadSceneOne:
+    def __init__(self):
+        pass
 
-    fon = pygame.transform.scale(load_image('fon.jpg'), (1920, 1080))
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 100)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+    def draw(self, screen):
+        fon = pygame.transform.scale(load_image('load_screen.jpg'), (1920, 1080))
+        screen.blit(fon, (0, 0))
+
+        intro_text = ["Аллистар: Посмертная афёра", "",
+                      "Beta 1.0.0",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "Нажмите на любую кнопку чтобы начать"]
+
+        font = pygame.font.Font(None, 100)
+        text_coord = 70
+        for line in intro_text:
+            string_rendered = font.render(line, 1, pygame.Color('black'))
+            intro_rect = string_rendered.get_rect()
+            text_coord += 10
+            intro_rect.top = text_coord
+            intro_rect.x = 10
+            text_coord += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+
+    def update(self, dt, events):
+        pass
+
+
+class LoadSceneTwo:
+    def __init__(self):
+        pass
+
+    def draw(self, screen):
+        fon = pygame.transform.scale(load_image('load_screen2.jpg'), (1920, 1080))
+        screen.blit(fon, (0, 0))
+
+        intro_text = ["Аллистар: Посмертная афёра", "",
+                      "Beta 1.0.1",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "Нажмите на любую кнопку чтобы начать"]
+
+        font = pygame.font.Font(None, 100)
+        text_coord = 70
+        for line in intro_text:
+            string_rendered = font.render(line, 1, pygame.Color('white'))
+            intro_rect = string_rendered.get_rect()
+            text_coord += 10
+            intro_rect.top = text_coord
+            intro_rect.x = 10
+            text_coord += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+
+    def update(self, dt, events):
+        pass
+
+
+class LoadSceneThree:
+    def __init__(self):
+        pass
+
+    def draw(self, screen):
+        fon = pygame.transform.scale(load_image('load_screen3.jpg'), (1920, 1080))
+        screen.blit(fon, (0, 0))
+
+        intro_text = ["Аллистар: Посмертная афёра", "",
+                      "Beta 1.0.0",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "Нажмите на любую кнопку чтобы начать"]
+
+        font = pygame.font.Font(None, 100)
+        text_coord = 70
+        for line in intro_text:
+            string_rendered = font.render(line, 1, pygame.Color('white'))
+            intro_rect = string_rendered.get_rect()
+            text_coord += 10
+            intro_rect.top = text_coord
+            intro_rect.x = 10
+            text_coord += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+
+    def update(self, dt, events):
+        pass
+
+
+class Fader:
+    def __init__(self, scenes):
+        self.scenes = cycle(scenes)
+        self.scene = next(self.scenes)
+        self.fading = None
+        self.alpha = 0
+        sr = pygame.display.get_surface().get_rect()
+        self.veil = pygame.Surface(sr.size)
+        self.veil.fill((0, 0, 0))
+
+    def next(self):
+        if not self.fading:
+            self.fading = 'OUT'
+            self.alpha = 0
+
+    def draw(self, screen):
+        self.scene.draw(screen)
+        if self.fading:
+            self.veil.set_alpha(self.alpha)
+            screen.blit(self.veil, (0, 0))
+
+    def update(self, dt, events):
+        self.scene.update(dt, events)
+
+        if self.fading == 'OUT':
+            self.alpha += 8
+            if self.alpha >= 255:
+                self.fading = 'IN'
+                self.scene = next(self.scenes)
+        else:
+            self.alpha -= 8
+            if self.alpha <= 0:
+                self.fading = None
+
+
+def start_screen():
+    screen_width, screen_height = 1920, 1080
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    clock = pygame.time.Clock()
+    dt = 0
+    fader = Fader([LoadSceneOne(), LoadSceneTwo(), LoadSceneThree()])
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN:
-                    return  # начинаем игру
+        events = pygame.event.get()
+        for e in events:
+            if e.type == pygame.QUIT:
+                return
+            if e.type == pygame.MOUSEMOTION:
+                fader.next()
+
+            if e.type == pygame.KEYDOWN:
+                return
+
+        fader.draw(screen)
+        fader.update(dt, events)
 
         pygame.display.flip()
-        clock.tick(FPS)
+        dt = clock.tick(30)
 
+
+# -------------------------------------------------------------------------------------------------------
 
 def shop():
     screen.fill('black')
