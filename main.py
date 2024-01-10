@@ -118,6 +118,7 @@ def move(player, movement):
             player.move(x + 1, y)
 
         elif x < level_x - 1 and level_map[y][x + 1] == '$':
+            what()
             shop()
 
 
@@ -165,7 +166,7 @@ class LoadSceneOne:
         screen.blit(fon, (0, 0))
 
         intro_text = ["Аллистар: Посмертная афёра", "",
-                      "Beta 1.0.0",
+                      "Beta 1.0.1",
                       "",
                       "",
                       "",
@@ -229,7 +230,7 @@ class LoadSceneThree:
         screen.blit(fon, (0, 0))
 
         intro_text = ["Аллистар: Посмертная афёра", "",
-                      "Beta 1.0.0",
+                      "Beta 1.0.1",
                       "",
                       "",
                       "",
@@ -313,20 +314,54 @@ def start_screen():
 
 
 # -------------------------------------------------------------------------------------------------------
+def what():
+    intro_text = ["Нажмите на любую кнопку чтобы закрыть",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "Чтобы купить предмет нажмите на цифру,"
+                  "соответствующую его позиции"]
+
+    fon = pygame.transform.scale(load_image('fon.jpg'), (1920, 1080))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 73)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                    return  # начинаем игру
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+# -------------------------------------------------------------------------------------------------------
 
 def shop():
     screen.fill('black')
     fon = pygame.transform.scale(load_image('inside_b.png'), (1920, 1080))
     screen.blit(fon, (0, 0))
 
+    sold_out = pygame.transform.scale(load_image('sold_outc.png'), (150, 180))
+
     health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
     screen.blit(health, (110, 670))
 
-    health = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
-    screen.blit(health, (410, 670))
+    shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
+    screen.blit(shield, (410, 670))
 
-    health = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
-    screen.blit(health, (710, 670))
+    sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
+    screen.blit(sword, (710, 670))
 
     font = pygame.font.Font(None, 70)
     text = font.render("Таинственная лавка!", True, (255, 255, 0))
@@ -336,14 +371,25 @@ def shop():
     text_h = text.get_height()
     screen.blit(text, (text_x, text_y))
     pygame.draw.rect(screen, (255, 255, 0), (text_x - 10, text_y - 10,
-                                           text_w + 20, text_h + 20), 5)
+                                             text_w + 20, text_h + 20), 5)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN:
-                return  # начинаем игру
+                if event.key == pygame.K_ESCAPE:
+                    return  # начинаем игру
+
+                elif event.key == pygame.K_1:
+                    screen.blit(sold_out, (110, 670))
+
+                elif event.key == pygame.K_2:
+                    screen.blit(sold_out, (410, 670))
+
+                elif event.key == pygame.K_3:
+                    screen.blit(sold_out, (710, 670))
+
         pygame.display.flip()
         clock.tick(FPS)
 
