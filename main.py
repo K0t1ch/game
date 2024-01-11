@@ -2,8 +2,13 @@ import pygame
 import sys
 import os
 from itertools import cycle
+from cave import start
 
 FPS = 50
+
+health_b = [0]
+shield_b = [0]
+attack_b = [0]
 
 pygame.init()
 size = width, height = 0, 1080
@@ -112,6 +117,9 @@ def move(player, movement):
                       level_map[y][x - 1] == '@'):
             player.move(x - 1, y)
 
+        elif x > 0 and level_map[y][x - 1] == '*':
+            start()
+
     elif movement == 'right':
         if x < level_x - 1 and (level_map[y][x + 1] == '.' or level_map[y][x + 1] == '>'
                                 or level_map[y][x + 1] == '@'):
@@ -165,8 +173,8 @@ class LoadSceneOne:
         fon = pygame.transform.scale(load_image('load_screen.jpg'), (1920, 1080))
         screen.blit(fon, (0, 0))
 
-        intro_text = ["Аллистар: Посмертная афёра", "",
-                      "Beta 1.0.1",
+        intro_text = ["Аллистар: Посмертная афера", "",
+                      "Beta 1.0.3",
                       "",
                       "",
                       "",
@@ -177,7 +185,7 @@ class LoadSceneOne:
         font = pygame.font.Font(None, 100)
         text_coord = 70
         for line in intro_text:
-            string_rendered = font.render(line, 1, pygame.Color('black'))
+            string_rendered = font.render(line, 1, pygame.Color(10, 18, 143))
             intro_rect = string_rendered.get_rect()
             text_coord += 10
             intro_rect.top = text_coord
@@ -197,8 +205,8 @@ class LoadSceneTwo:
         fon = pygame.transform.scale(load_image('load_screen2.jpg'), (1920, 1080))
         screen.blit(fon, (0, 0))
 
-        intro_text = ["Аллистар: Посмертная афёра", "",
-                      "Beta 1.0.1",
+        intro_text = ["Аллистар: Посмертная афера", "",
+                      "Beta 1.0.3",
                       "",
                       "",
                       "",
@@ -229,8 +237,8 @@ class LoadSceneThree:
         fon = pygame.transform.scale(load_image('load_screen3.jpg'), (1920, 1080))
         screen.blit(fon, (0, 0))
 
-        intro_text = ["Аллистар: Посмертная афёра", "",
-                      "Beta 1.0.1",
+        intro_text = ["Аллистар: Посмертная афера", "",
+                      "Beta 1.0.3",
                       "",
                       "",
                       "",
@@ -355,13 +363,25 @@ def shop():
     sold_out = pygame.transform.scale(load_image('sold_outc.png'), (150, 180))
 
     health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
-    screen.blit(health, (110, 670))
 
     shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
-    screen.blit(shield, (410, 670))
 
     sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
-    screen.blit(sword, (710, 670))
+
+    if health_b[0] == 0:
+        screen.blit(health, (110, 670))
+    else:
+        screen.blit(sold_out, (110, 670))
+
+    if shield_b[0] == 0:
+        screen.blit(shield, (410, 670))
+    else:
+        screen.blit(sold_out, (410, 670))
+
+    if attack_b[0] == 0:
+        screen.blit(sword, (710, 670))
+    else:
+        screen.blit(sold_out, (710, 670))
 
     font = pygame.font.Font(None, 70)
     text = font.render("Таинственная лавка!", True, (255, 255, 0))
@@ -383,19 +403,25 @@ def shop():
 
                 elif event.key == pygame.K_1:
                     screen.blit(sold_out, (110, 670))
+                    health_b.clear()
+                    health_b.append(1)
 
                 elif event.key == pygame.K_2:
                     screen.blit(sold_out, (410, 670))
+                    shield_b.clear()
+                    shield_b.append(1)
 
                 elif event.key == pygame.K_3:
                     screen.blit(sold_out, (710, 670))
+                    attack_b.clear()
+                    attack_b.append(1)
 
         pygame.display.flip()
         clock.tick(FPS)
 
 
 start_screen()
-if __name__ == '__main__':
+def go():
     running = True
 
     while running:
@@ -428,3 +454,5 @@ if __name__ == '__main__':
         clock.tick(50)
 
     pygame.quit()
+
+go()
