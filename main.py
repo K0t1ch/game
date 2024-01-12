@@ -6,6 +6,7 @@ from cave import start
 
 FPS = 50
 
+money = [0]
 health_b = [0]
 shield_b = [0]
 attack_b = [0]
@@ -60,7 +61,9 @@ tile_images = {
     'treebs': load_image('tree2.png'),
     'water': load_image('water.png'),
     'tuda': load_image('path1.png'),
-    'suda': load_image('path2.png')
+    'suda': load_image('path2.png'),
+    'voin': load_image('voin.png'),
+    'a_kto': load_image('a_kto.png')
 }
 player_image = load_image('allis.png')
 
@@ -157,6 +160,10 @@ def generate_level(level):
                 Tile('tuda', x, y)
             elif level[y][x] == '<':
                 Tile('suda', x, y)
+            elif level[y][x] == '!':
+                Tile('voin', x, y)
+            elif level[y][x] == '?':
+                Tile('a_kto', x, y)
 
     # вернем игрока, а также размер поля в клетках
     return new_player, x, y
@@ -331,12 +338,12 @@ def what():
                   "Чтобы купить предмет нажмите на цифру,"
                   "соответствующую его позиции"]
 
-    fon = pygame.transform.scale(load_image('fon.jpg'), (1920, 1080))
+    fon = pygame.transform.scale(load_image('rule.png'), (1920, 1080))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 73)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
+        string_rendered = font.render(line, 1, pygame.Color('white'))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -402,6 +409,73 @@ def shop():
                     return  # начинаем игру
 
                 elif event.key == pygame.K_1:
+                    money[0] -= 30
+                    screen.blit(sold_out, (110, 670))
+                    health_b.clear()
+                    health_b.append(1)
+
+                elif event.key == pygame.K_2:
+                    money[0] -= 50
+                    screen.blit(sold_out, (410, 670))
+                    shield_b.clear()
+                    shield_b.append(1)
+
+                elif event.key == pygame.K_3:
+                    money[0] -= 100
+                    screen.blit(sold_out, (710, 670))
+                    attack_b.clear()
+                    attack_b.append(1)
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def inventory():
+    screen.fill('black')
+    fon = pygame.transform.scale(load_image('inventory.png'), (1920, 1080))
+    screen.blit(fon, (0, 0))
+
+    sold_out = pygame.transform.scale(load_image('sold_outc.png'), (150, 180))
+
+    health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
+
+    shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
+
+    sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
+
+    if health_b[0] == 1:
+        screen.blit(health, (110, 670))
+
+    if shield_b[0] == 1:
+        screen.blit(shield, (410, 670))
+
+    if attack_b[0] == 1:
+        screen.blit(sword, (710, 670))
+
+    sry = 'Инвентарь, пока пусто('
+    ok = 'Инвентарь'
+    font = pygame.font.Font(None, 70)
+    if health_b[0] == shield_b[0] == attack_b[0] == 0:
+        text = font.render(sry, True, (255, 255, 0))
+    else:
+        text = font.render(ok, True, (255, 255, 0))
+    text_x = 800
+    text_y = 170
+    text_w = text.get_width()
+    text_h = text.get_height()
+    screen.blit(text, (text_x, text_y))
+    pygame.draw.rect(screen, (255, 255, 0), (text_x - 10, text_y - 10,
+                                             text_w + 20, text_h + 20), 5)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE or event.key == pygame.K_e:
+                    return  # начинаем игру
+
+                elif event.key == pygame.K_1:
                     screen.blit(sold_out, (110, 670))
                     health_b.clear()
                     health_b.append(1)
@@ -446,9 +520,26 @@ def go():
                 elif event.key == pygame.K_d:
                     move(player, 'right')
 
+                elif event.key == pygame.K_e:
+                    inventory()
+
         screen.fill('black')
         tiles_group.draw(screen)
         player_group.draw(screen)
+
+        font = pygame.font.Font(None, 70)
+        text = font.render(f"{money[0]}", True, (255, 255, 0))
+        text_x = 1700
+        text_y = 1000
+        text_w = text.get_width()
+        text_h = text.get_height()
+        screen.blit(text, (text_x, text_y))
+        pygame.draw.rect(screen, (255, 255, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20), 5)
+
+        coin = pygame.transform.scale(load_image('монетка.png'), (150, 150))
+
+        screen.blit(coin, (1800, 930))
 
         pygame.display.flip()
         clock.tick(50)

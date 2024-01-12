@@ -52,7 +52,8 @@ def load_level(filename):
 tile_images = {
     'wall': load_image('void.png'),
     'empty': load_image('escalibur.png'),
-    'tuda': load_image('path.png')
+    'tuda': load_image('path.png'),
+    'enemy': load_image('cave_thing.png')
 }
 player_image = load_image('allis.png')
 
@@ -128,6 +129,8 @@ def generate_level(level):
                 new_player = Player(x, y)
             elif level[y][x] == '>':
                 Tile('tuda', x, y)
+            elif level[y][x] == '?':
+                Tile('enemy', x, y)
 
     # вернем игрока, а также размер поля в клетках
     return new_player, x, y
