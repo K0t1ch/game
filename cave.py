@@ -96,24 +96,33 @@ level_map = load_level('cave.txt')
 def move(player, movement):
     x, y = player.pos
     if movement == 'up':
-        if y > 0 and (level_map[y - 1][x] == '.' or level_map[y - 1][x] == '$' or level_map[y - 1][x] == '>' or
-                      level_map[y - 1][x] == '@'):
-            player.move(x, y - 1)
+        pass
 
     elif movement == 'down':
-        if y < level_y - 1 and (level_map[y + 1][x] == '.' or level_map[y + 1][x] == '$' or level_map[y + 1][x] == '>'
-                                or level_map[y + 1][x] == '@'):
-            player.move(x, y + 1)
+        pass
 
     elif movement == 'left':
-        if x > 0 and (level_map[y][x - 1] == '.' or level_map[y][x - 1] == '$' or level_map[y][x - 1] == '>' or
-                      level_map[y][x - 1] == '@'):
-            player.move(x - 1, y)
+        if x > 0 and (level_map[round(y)][round(x - 0.5)] == '.' or level_map[round(y)][round(x - 0.5)] == '>' or
+                      level_map[round(y)][round(x - 0.5)] == '@'):
+            player.move(x - 0.5, y)
 
     elif movement == 'right':
-        if x < level_x - 1 and (level_map[y][x + 1] == '.' or level_map[y][x + 1] == '>'
-                                or level_map[y][x + 1] == '@'):
-            player.move(x + 1, y)
+        if x < level_x - 1 and (level_map[round(y)][round(x + 0.5)] == '.' or level_map[round(y)][round(x + 0.5)] == '>'
+                                or level_map[round(y)][round(x + 0.5)] == '@'):
+            player.move(x + 0.5, y)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def generate_level(level):

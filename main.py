@@ -107,42 +107,42 @@ level_map = load_level('map.txt')
 def move(player, movement):
     x, y = player.pos
     if movement == 'up':
-        if y > 0 and (level_map[y - 1][x] == '.' or level_map[y - 1][x] == '$' or
-                      level_map[y - 1][x] == '@'):
-            player.move(x, y - 1)
+        if y > 0 and (level_map[round(y - 0.5)][round(x)] == '.' or level_map[round(y - 0.5)][round(x)] == '$' or
+                      level_map[round(y - 0.5)][round(x)] == '@'):
+            player.move(x, y - 0.5)
 
-        elif y > 0 and level_map[y - 1][x] == '>':
+        elif y > 0 and level_map[round(y - 0.5)][round(x)] == '>':
             letsgo()
 
     elif movement == 'down':
-        if y < level_y - 1 and (level_map[y + 1][x] == '.' or level_map[y + 1][x] == '$'
-                                or level_map[y + 1][x] == '@'):
-            player.move(x, y + 1)
+        if y < level_y - 1 and (level_map[round(y + 0.5)][round(x)] == '.' or level_map[round(y + 0.5)][round(x)] == '$'
+                                or level_map[round(y + 0.5)][round(x)] == '@'):
+            player.move(x, y + 0.5)
 
-        elif y < level_y - 1 and level_map[y + 1][x] == '>':
+        elif y < level_y - 1 and level_map[round(y + 0.5)][round(x)] == '>':
             letsgo()
 
     elif movement == 'left':
-        if x > 0 and (level_map[y][x - 1] == '.' or level_map[y][x - 1] == '$' or
-                      level_map[y][x - 1] == '@'):
-            player.move(x - 1, y)
+        if x > 0 and (level_map[round(y)][round(x - 0.5)] == '.' or level_map[round(y)][round(x - 0.5)] == '$' or
+                      level_map[round(y)][round(x - 0.5)] == '@'):
+            player.move(x - 0.5, y)
 
-        elif x > 0 and level_map[y][x - 1] == '*':
+        elif x > 0 and level_map[round(y)][round(x - 0.5)] == '*':
             start()
 
-        elif x > 0 and level_map[y][x - 1] == '>':
+        elif x > 0 and level_map[round(y)][round(x - 0.5)] == '>':
             letsgo()
 
     elif movement == 'right':
-        if x < level_x - 1 and (level_map[y][x + 1] == '.'
-                                or level_map[y][x + 1] == '@'):
-            player.move(x + 1, y)
+        if x < level_x - 1 and (level_map[round(y)][round(x + 0.5)] == '.'
+                                or level_map[round(y)][round(x + 0.5)] == '@'):
+            player.move(x + 0.5, y)
 
-        elif x < level_x - 1 and level_map[y][x + 1] == '$':
+        elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '$':
             what()
             shop()
 
-        elif x < level_x - 1 and level_map[y][x + 1] == '>':
+        elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '>':
             letsgo()
 
 
@@ -213,6 +213,7 @@ class LoadSceneOne:
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
+        pygame.draw.rect(screen, 'white', (300, 590, 1250, 70), 5)
         font = pygame.font.Font(None, 80)
         text_coord = 70
         for line in intro_text:
@@ -256,7 +257,7 @@ class LoadSceneTwo:
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
-
+        pygame.draw.rect(screen, 'white', (300, 590, 1250, 70), 5)
         font = pygame.font.Font(None, 80)
         text_coord = 70
         for line in intro_text:
@@ -267,7 +268,6 @@ class LoadSceneTwo:
             intro_rect.x = 10
             text_coord += intro_rect.height
             screen.blit(string_rendered, intro_rect)
-
 
 
     def update(self, dt, events):
@@ -302,6 +302,7 @@ class LoadSceneThree:
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
+        pygame.draw.rect(screen, 'white', (300, 590, 1250, 70), 5)
         font = pygame.font.Font(None, 80)
         text_coord = 70
         for line in intro_text:
@@ -505,9 +506,9 @@ def inventory():
     ok = 'Инвентарь'
     font = pygame.font.Font(None, 70)
     if health_b[0] == shield_b[0] == attack_b[0] == 0:
-        text = font.render(sry, True, (255, 255, 0))
+        text = font.render(sry, True, 'red')
     else:
-        text = font.render(ok, True, (255, 255, 0))
+        text = font.render(ok, True, 'green')
     text_x = 800
     text_y = 170
     text_w = text.get_width()
@@ -578,11 +579,18 @@ def go():
 
         font = pygame.font.Font(None, 70)
         text = font.render(f"{money[0]}", True, (255, 255, 0))
-        if money[0] >= 10:
-            text_x = 1720
+        if len(str(money[0])) == 1:
+            text_x = 1760
+
+        elif len(str(money[0])) == 2:
+            text_x = 1740
+
+        elif len(str(money[0])) == 3:
+            text_x = 1715
 
         else:
-            text_x = 1760
+            text_x = 1690
+
         text_y = 1000
         text_w = text.get_width()
         text_h = text.get_height()
