@@ -1,4 +1,5 @@
 import pygame
+import sys
 import random
 
 # Инициализация Pygame
@@ -6,73 +7,110 @@ pygame.init()
 
 # Определение цветов
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-BLACK = (0, 0, 0)
-# Размеры экрана
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
 
-# Инициализация экрана
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Card Game")
+# Определение размеров окна
+WIDTH, HEIGHT = 800, 600
 
-# Инициализация переменных
+# Создание окна
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Card Battle Field")
+
+# Загрузка изображений
+player_portrait = pygame.image.load("data/allis.png")
+opponent_portrait = pygame.image.load("data/Rock2.png")
+
+# Определение шрифтов
+font = pygame.font.Font(None, 36)
+# Инициализация игровых параметров
 player_mana = 0
-player_health = 100
-bot_health = 100
+player_max_mana = 0
+player_health = 30
+opponent_health = 30
+player_deck_size = 30
+player_hand_size = 5
+player_card_stock = 0
 
-# Инициализация колоды и колоды сброса
-deck = ["Card1", "Card2", "Card3", "Card4", "Card5"]
-discard_pile = []
+opponent_deck_size = 30
+opponent_hand_size = 5
+opponent_card_stock = 0
 
-# Функция для выдачи карт
-def deal_cards(num_cards):
-    return random.sample(deck, num_cards)
+active_player = "player"  # "player" или "opponent"
 
-# Основной цикл программы
+# Флаг для определения, был ли уже сделан первый клик мыши
+first_click = False
+
+# Функция для начала нового хода
+def start_new_turn():
+    global player_mana, player_max_mana, player_card_stock, active_player
+
+    if active_player == "player":
+        player_max_mana += 1
+        player_mana = player_max_mana
+        player_card_stock += 1
+
+        active_player = "opponent" if active_player == "player" else "player"
+
+# Основной цикл игры
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                x, y = event.pos
+                first_click = True  # Помечаем, что был сделан первый клик мыши
 
-    # Отрисовка фона
-    screen.fill(WHITE)
+    if first_click:  # Проверяем, был ли сделан первый клик мыши
 
-    # Отрисовка индикатора маны
-    pygame.draw.rect(screen, BLUE, (10, 10, player_mana * 10, 20))
+        # Очистка экрана
+        screen.fill(WHITE)
 
-    # Отрисовка колоды
-    pygame.draw.rect(screen, RED, (10, 50, 50, 80))
+        # Отрисовка игрока
+        screen.blit(player_portrait, (50, 50))
+        pygame.draw.rect(screen, BLUE, (50, 300, 100, 30))  # Индикатор манны
+        pygame.draw.rect(screen, RED, (50, 350, 100, 30))  # Индикатор здоровья
+        text = font.render(f"Mana: {player_mana}/{player_max_mana}", True, BLACK)
+        screen.blit(text, (60, 305))
+        text = font.render(f"Health: {player_health}", True, BLACK)
+        screen.blit(text, (60, 355))
+        text = font.render(f"Deck: {player_deck_size}", True, BLACK)
+        screen.blit(text, (60, 405))
+        text = font.render(f"Hand: {player_hand_size}", True, BLACK)
+        screen.blit(text, (60, 455))
+        text = font.render(f"Stock: {player_card_stock}", True, BLACK)
+        screen.blit(text, (60, 505))
 
-    # Отрисовка колоды сброса
-    pygame.draw.rect(screen, RED, (80, 50, 50, 80))
+        # Отрисовка оппонента
+        screen.blit(opponent_portrait, (WIDTH - 150, 50))
+        pygame.draw.rect(screen, BLUE, (WIDTH - 150, 300, 100, 30))  # Индикатор манны
+        pygame.draw.rect(screen, RED, (WIDTH - 150, 350, 100, 30))  # Индикатор здоровья
+        text = font.render(f"Mana: ?", True, BLACK)
+        screen.blit(text, (WIDTH - 140, 305))
+        text = font.render(f"Health: {opponent_health}", True, BLACK)
+        screen.blit(text, (WIDTH - 140, 355))
+        text = font.render(f"Deck: {opponent_deck_size}", True, BLACK)
+        screen.blit(text, (WIDTH - 140, 405))
+        text = font.render(f"Hand: {opponent_hand_size}", True, BLACK)
+        screen.blit(text, (WIDTH - 140, 455))
+        text = font.render(f"Stock: {opponent_card_stock}", True, BLACK)
+        screen.blit(text, (WIDTH - 140, 505))
 
-    # Выдача карт игроку и боту
-    player_hand = deal_cards(3)
-    bot_hand = deal_cards(3)
+        # Отрисовка кнопки "End Turn"
+        end_turn_button = pygame.draw.rect(screen, (0, 255, 0), (350, 500, 100, 50))
+        text = font.render("End Turn", True, BLACK)
+        screen.blit(text, (365, 515))
 
-    # Отображение карт на экране
-    for i, card in enumerate(player_hand):
-        pygame.draw.rect(screen, BLUE, (10 + i * 60, 150, 50, 80))
-        font = pygame.font.Font(None, 36)
-        text = font.render(card, True, WHITE)
-        screen.blit(text, (20 + i * 60, 170))
+        # Проверка нажатия на кнопку "End Turn"
+        if end_turn_button.collidepoint(pygame.mouse.get_pos()):
+            if pygame.mouse.get_pressed()[0]:  # Левая кнопка мыши
+                start_new_turn()
 
-    for i, card in enumerate(bot_hand):
-        pygame.draw.rect(screen, RED, (10 + i * 60, 350, 50, 80))
+        # Обновление экрана
+        pygame.display.flip()
 
-    # Отрисовка счетчиков здоровья
-    font = pygame.font.Font(None, 36)
-    player_health_text = font.render(f"Player Health: {player_health}", True, BLACK)
-    screen.blit(player_health_text, (SCREEN_WIDTH - 200, SCREEN_HEIGHT - 50))
-
-    bot_health_text = font.render(f"Bot Health: {bot_health}", True, BLACK)
-    screen.blit(bot_health_text, (20, 20))
-
-    # Обновление экрана
-    pygame.display.flip()
-
-# Завершение Pygame
+# Завершение игры
 pygame.quit()
