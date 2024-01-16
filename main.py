@@ -15,12 +15,12 @@ attack_b = [0]
 pygame.init()
 size = width, height = 0, 1080
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 
 def load_image(name, colorkey=None):
     fullname = os.path.join("data", name)
-    # если файл не существует, то выходим
+
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -96,7 +96,6 @@ class Player(pygame.sprite.Sprite):
 
 player = None
 
-# группы спрайтов
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
@@ -148,7 +147,6 @@ def move(player, movement):
             for i in all_data:
                 f.write(f'{str(i)}\n')
             f.close()
-
             letsgo()
 
 
@@ -184,7 +182,6 @@ def generate_level(level):
             elif level[y][x] == '?':
                 Tile('a_kto', x, y)
 
-    # вернем игрока, а также размер поля в клетках
     return new_player, x, y
 
 
@@ -215,7 +212,7 @@ class LoadSceneOne:
                       "",
                       "",
                       "",
-                      "Beta 1.0.5",
+                      "Beta 1.0.7",
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
@@ -259,7 +256,7 @@ class LoadSceneTwo:
                       "",
                       "",
                       "",
-                      "Beta 1.0.5",
+                      "Beta 1.0.7",
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
@@ -274,7 +271,6 @@ class LoadSceneTwo:
             intro_rect.x = 10
             text_coord += intro_rect.height
             screen.blit(string_rendered, intro_rect)
-
 
     def update(self, dt, events):
         pass
@@ -304,7 +300,7 @@ class LoadSceneThree:
                       "",
                       "",
                       "",
-                      "Beta 1.0.5",
+                      "Beta 1.0.7",
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
@@ -425,11 +421,11 @@ def shop():
 
     sold_out = pygame.transform.scale(load_image('sold_outc.png'), (150, 180))
 
-    health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
+    health = pygame.transform.scale(load_image('drink.png'), (150, 180))
 
-    shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
+    shield = pygame.transform.scale(load_image('armor.png'), (150, 180))
 
-    sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
+    sword = pygame.transform.scale(load_image('weapon.png'), (150, 180))
 
     if health_b[0] == 0:
         screen.blit(health, (110, 670))
@@ -491,13 +487,11 @@ def inventory():
     fon = pygame.transform.scale(load_image('inventory.png'), (1920, 1080))
     screen.blit(fon, (0, 0))
 
-    sold_out = pygame.transform.scale(load_image('sold_outc.png'), (150, 180))
+    health = pygame.transform.scale(load_image('drink.png'), (150, 180))
 
-    health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
+    shield = pygame.transform.scale(load_image('armor.png'), (150, 180))
 
-    shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
-
-    sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
+    sword = pygame.transform.scale(load_image('weapon.png'), (150, 180))
 
     if health_b[0] == 1:
         screen.blit(health, (110, 670))
@@ -531,26 +525,13 @@ def inventory():
                 if event.key == pygame.K_ESCAPE or event.key == pygame.K_e:
                     return  # начинаем игру
 
-                elif event.key == pygame.K_1:
-                    screen.blit(sold_out, (110, 670))
-                    health_b.clear()
-                    health_b.append(1)
-
-                elif event.key == pygame.K_2:
-                    screen.blit(sold_out, (410, 670))
-                    shield_b.clear()
-                    shield_b.append(1)
-
-                elif event.key == pygame.K_3:
-                    screen.blit(sold_out, (710, 670))
-                    attack_b.clear()
-                    attack_b.append(1)
-
         pygame.display.flip()
         clock.tick(FPS)
 
 
 start_screen()
+
+
 def go():
     running = True
 

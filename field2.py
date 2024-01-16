@@ -163,11 +163,11 @@ def inventory():
     fon = pygame.transform.scale(load_image('inventory.png'), (1920, 1080))
     screen.blit(fon, (0, 0))
 
-    health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
+    health = pygame.transform.scale(load_image('drink.png'), (150, 180))
 
-    shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
+    shield = pygame.transform.scale(load_image('armor.png'), (150, 180))
 
-    sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
+    sword = pygame.transform.scale(load_image('weapon.png'), (150, 180))
 
     if health_b[0] >= 1:
         screen.blit(health, (110, 670))
