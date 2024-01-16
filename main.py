@@ -143,6 +143,12 @@ def move(player, movement):
             shop()
 
         elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '>':
+            all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
+            f = open('save.txt', 'w')
+            for i in all_data:
+                f.write(f'{str(i)}\n')
+            f.close()
+
             letsgo()
 
 

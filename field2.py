@@ -3,16 +3,15 @@ import sys
 import os
 
 FPS = 50
-
 money = [0]
 health_b = [0]
-shield_b = [0]
 attack_b = [0]
+shield_b = [0]
 
 pygame.init()
 size = width, height = 0, 1080
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 
 def load_image(name, colorkey=None):
@@ -158,136 +157,34 @@ player, level_x, level_y = generate_level(load_level('field_map.txt'))
 
 
 # -------------------------------------------------------------------------------------------------------
-def what():
-    intro_text = ["Нажмите на любую кнопку чтобы закрыть",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "Чтобы купить предмет нажмите на цифру,"
-                  "соответствующую его позиции"]
-
-    fon = pygame.transform.scale(load_image('rule.png'), (1920, 1080))
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 73)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN:
-                    return  # начинаем игру
-        pygame.display.flip()
-        clock.tick(FPS)
-
-
-# -------------------------------------------------------------------------------------------------------
-
-def shop():
-    screen.fill('black')
-    fon = pygame.transform.scale(load_image('inside_b.png'), (1920, 1080))
-    screen.blit(fon, (0, 0))
-
-    sold_out = pygame.transform.scale(load_image('sold_outc.png'), (150, 180))
-
-    health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
-
-    shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
-
-    sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
-
-    if health_b[0] == 0:
-        screen.blit(health, (110, 670))
-    else:
-        screen.blit(sold_out, (110, 670))
-
-    if shield_b[0] == 0:
-        screen.blit(shield, (410, 670))
-    else:
-        screen.blit(sold_out, (410, 670))
-
-    if attack_b[0] == 0:
-        screen.blit(sword, (710, 670))
-    else:
-        screen.blit(sold_out, (710, 670))
-
-    font = pygame.font.Font(None, 70)
-    text = font.render("Таинственная лавка!", True, (255, 255, 0))
-    text_x = 700
-    text_y = 170
-    text_w = text.get_width()
-    text_h = text.get_height()
-    screen.blit(text, (text_x, text_y))
-    pygame.draw.rect(screen, (255, 255, 0), (text_x - 10, text_y - 10,
-                                             text_w + 20, text_h + 20), 5)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return  # начинаем игру
-
-                elif event.key == pygame.K_1:
-                    money[0] -= 30
-                    screen.blit(sold_out, (110, 670))
-                    health_b.clear()
-                    health_b.append(1)
-
-                elif event.key == pygame.K_2:
-                    money[0] -= 50
-                    screen.blit(sold_out, (410, 670))
-                    shield_b.clear()
-                    shield_b.append(1)
-
-                elif event.key == pygame.K_3:
-                    money[0] -= 100
-                    screen.blit(sold_out, (710, 670))
-                    attack_b.clear()
-                    attack_b.append(1)
-
-        pygame.display.flip()
-        clock.tick(FPS)
-
 
 def inventory():
     screen.fill('black')
     fon = pygame.transform.scale(load_image('inventory.png'), (1920, 1080))
     screen.blit(fon, (0, 0))
 
-    sold_out = pygame.transform.scale(load_image('sold_outc.png'), (150, 180))
-
     health = pygame.transform.scale(load_image('health_c.png'), (150, 180))
 
     shield = pygame.transform.scale(load_image('shield_c.png'), (150, 180))
 
     sword = pygame.transform.scale(load_image('attack_c.png'), (150, 180))
 
-    if health_b[0] == 1:
+    if health_b[0] >= 1:
         screen.blit(health, (110, 670))
 
-    if shield_b[0] == 1:
+    if shield_b[0] >= 1:
         screen.blit(shield, (410, 670))
 
-    if attack_b[0] == 1:
+    if attack_b[0] >= 1:
         screen.blit(sword, (710, 670))
 
     sry = 'Инвентарь, пока пусто('
     ok = 'Инвентарь'
     font = pygame.font.Font(None, 70)
-    if health_b[0] == shield_b[0] == attack_b[0] == 0:
-        text = font.render(sry, True, (255, 255, 0))
+    if health_b[0] == 0 and shield_b[0] == 0 and attack_b[0] == 0:
+        text = font.render(sry, True, 'red')
     else:
-        text = font.render(ok, True, (255, 255, 0))
+        text = font.render(ok, True, 'green')
     text_x = 800
     text_y = 170
     text_w = text.get_width()
@@ -304,21 +201,6 @@ def inventory():
                 if event.key == pygame.K_ESCAPE or event.key == pygame.K_e:
                     return  # начинаем игру
 
-                elif event.key == pygame.K_1:
-                    screen.blit(sold_out, (110, 670))
-                    health_b.clear()
-                    health_b.append(1)
-
-                elif event.key == pygame.K_2:
-                    screen.blit(sold_out, (410, 670))
-                    shield_b.clear()
-                    shield_b.append(1)
-
-                elif event.key == pygame.K_3:
-                    screen.blit(sold_out, (710, 670))
-                    attack_b.clear()
-                    attack_b.append(1)
-
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -334,6 +216,22 @@ def letsgo():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
+
+                elif event.key == pygame.K_SPACE:
+                    new_data = []
+                    f = open('save.txt', 'r')
+                    a = f.readlines()
+                    f.close()
+
+                    for i in a:
+                        new_data.append(i.strip('\n').strip('\n'))
+
+                    new_data = list(map(lambda x: int(x), new_data))
+
+                    money[0] = new_data[0]
+                    health_b[0] = new_data[3]
+                    shield_b[0] = new_data[2]
+                    attack_b[0] = new_data[1]
 
                 if event.key == pygame.K_w:
                     move(player, 'up')
@@ -356,7 +254,17 @@ def letsgo():
 
         font = pygame.font.Font(None, 70)
         text = font.render(f"{money[0]}", True, (255, 255, 0))
-        text_x = 1700
+        if len(str(money[0])) == 1:
+            text_x = 1760
+
+        elif len(str(money[0])) == 2:
+            text_x = 1740
+
+        elif len(str(money[0])) == 3:
+            text_x = 1715
+
+        else:
+            text_x = 1690
         text_y = 1000
         text_w = text.get_width()
         text_h = text.get_height()
