@@ -4,10 +4,11 @@ import os
 from itertools import cycle
 from cave import start
 from field2 import letsgo
+from battle import game
 
 FPS = 50
 
-money = [0]
+money = [1000]
 health_b = [0]
 shield_b = [0]
 attack_b = [0]
@@ -111,7 +112,18 @@ def move(player, movement):
             player.move(x, y - 0.5)
 
         elif y > 0 and level_map[round(y - 0.5)][round(x)] == '>':
+            all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
+            f = open('save.txt', 'w')
+            for i in all_data:
+                f.write(f'{str(i)}\n')
+            f.close()
             letsgo()
+
+        elif y > 0 and level_map[round(y - 0.5)][round(x)] == '!':
+            game('voin.png')
+
+        elif y > 0 and level_map[round(y - 0.5)][round(x)] == '?':
+            game('a_kto.png')
 
     elif movement == 'down':
         if y < level_y - 1 and (level_map[round(y + 0.5)][round(x)] == '.' or level_map[round(y + 0.5)][round(x)] == '$'
@@ -119,7 +131,18 @@ def move(player, movement):
             player.move(x, y + 0.5)
 
         elif y < level_y - 1 and level_map[round(y + 0.5)][round(x)] == '>':
+            all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
+            f = open('save.txt', 'w')
+            for i in all_data:
+                f.write(f'{str(i)}\n')
+            f.close()
             letsgo()
+
+        elif y < level_y - 1 and level_map[round(y + 0.5)][round(x)] == '!':
+            game('voin.png')
+
+        elif y < level_y - 1 and level_map[round(y + 0.5)][round(x)] == '?':
+            game('a_kto.png')
 
     elif movement == 'left':
         if x > 0 and (level_map[round(y)][round(x - 0.5)] == '.' or level_map[round(y)][round(x - 0.5)] == '$' or
@@ -129,8 +152,28 @@ def move(player, movement):
         elif x > 0 and level_map[round(y)][round(x - 0.5)] == '*':
             start()
 
+        elif x > 0 and level_map[round(y)][round(x - 0.5)] == '&':
+            f = open('money.txt', 'r')
+            a = f.readline()
+            f.close()
+
+            a1 = money[0]
+            money.clear()
+            money.append(a1 + int(a) * 15)
+
         elif x > 0 and level_map[round(y)][round(x - 0.5)] == '>':
+            all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
+            f = open('save.txt', 'w')
+            for i in all_data:
+                f.write(f'{str(i)}\n')
+            f.close()
             letsgo()
+
+        elif x > 0 and level_map[round(y)][round(x - 0.5)] == '!':
+            game('voin.png')
+
+        elif x > 0 and level_map[round(y)][round(x - 0.5)] == '?':
+            game('a_kto.png')
 
     elif movement == 'right':
         if x < level_x - 1 and (level_map[round(y)][round(x + 0.5)] == '.'
@@ -140,6 +183,12 @@ def move(player, movement):
         elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '$':
             what()
             shop()
+
+        elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '!':
+            game('voin.png')
+
+        elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '?':
+            game('a_kto.png')
 
         elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '>':
             all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
@@ -212,7 +261,7 @@ class LoadSceneOne:
                       "",
                       "",
                       "",
-                      "Beta 1.0.7",
+                      "Beta 1.0.9",
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
@@ -256,7 +305,7 @@ class LoadSceneTwo:
                       "",
                       "",
                       "",
-                      "Beta 1.0.7",
+                      "Beta 1.0.9",
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
@@ -300,7 +349,7 @@ class LoadSceneThree:
                       "",
                       "",
                       "",
-                      "Beta 1.0.7",
+                      "Beta 1.0.9",
                       ]
 
         pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
@@ -460,19 +509,19 @@ def shop():
                 if event.key == pygame.K_ESCAPE:
                     return  # начинаем игру
 
-                elif event.key == pygame.K_1 and health_b[0] == 0:
+                elif event.key == pygame.K_1 and health_b[0] == 0 and money[0] >= 30:
                     money[0] -= 30
                     screen.blit(sold_out, (110, 670))
                     health_b.clear()
                     health_b.append(1)
 
-                elif event.key == pygame.K_2 and shield_b[0] == 0:
+                elif event.key == pygame.K_2 and shield_b[0] == 0 and money[0] >= 50:
                     money[0] -= 50
                     screen.blit(sold_out, (410, 670))
                     shield_b.clear()
                     shield_b.append(1)
 
-                elif event.key == pygame.K_3 and attack_b[0] == 0:
+                elif event.key == pygame.K_3 and attack_b[0] == 0 and money[0] >= 100:
                     money[0] -= 100
                     screen.blit(sold_out, (710, 670))
                     attack_b.clear()
@@ -533,6 +582,9 @@ start_screen()
 
 
 def go():
+    f = open('money.txt', 'w')
+    f.write('0')
+    f.close()
     running = True
 
     while running:

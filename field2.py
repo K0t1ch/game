@@ -58,7 +58,8 @@ tile_images = {
     'tuda': load_image('path1.png'),
     'suda': load_image('path2.png'),
     'voin': load_image('voin.png'),
-    'a_kto': load_image('a_kto.png')
+    'a_kto': load_image('a_kto.png'),
+    'isba': load_image('home.png')
 }
 player_image = load_image('allis.png')
 
@@ -119,6 +120,21 @@ def move(player, movement):
         if x < level_x - 1 and (level_map[round(y)][round(x + 0.5)] == '.'
                                 or level_map[round(y)][round(x + 0.5)] == '@'):
             player.move(x + 0.5, y)
+        elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == ')':
+            new_data = []
+            f = open('save.txt', 'r')
+            a = f.readlines()
+            f.close()
+
+            for i in a:
+                new_data.append(i.strip('\n').strip('\n'))
+
+            new_data = list(map(lambda x: int(x), new_data))
+
+            money[0] = new_data[0]
+            health_b[0] = new_data[3]
+            shield_b[0] = new_data[2]
+            attack_b[0] = new_data[1]
 
 
 def generate_level(level):
@@ -148,6 +164,8 @@ def generate_level(level):
                 Tile('voin', x, y)
             elif level[y][x] == '?':
                 Tile('a_kto', x, y)
+            elif level[y][x] == ')':
+                Tile('isba', x, y)
 
     # вернем игрока, а также размер поля в клетках
     return new_player, x, y
@@ -216,22 +234,6 @@ def letsgo():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
-
-                elif event.key == pygame.K_SPACE:
-                    new_data = []
-                    f = open('save.txt', 'r')
-                    a = f.readlines()
-                    f.close()
-
-                    for i in a:
-                        new_data.append(i.strip('\n').strip('\n'))
-
-                    new_data = list(map(lambda x: int(x), new_data))
-
-                    money[0] = new_data[0]
-                    health_b[0] = new_data[3]
-                    shield_b[0] = new_data[2]
-                    attack_b[0] = new_data[1]
 
                 if event.key == pygame.K_w:
                     move(player, 'up')
