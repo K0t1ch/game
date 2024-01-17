@@ -83,16 +83,33 @@ class Tile(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
-        self.image = player_image
+        self.images = {
+            'up': [load_image('allis_back_l.png'), load_image('allis_back_r.png')],
+            'down': [load_image('allis_left1.png'), load_image('allis_left2.png')],
+            'left': [load_image('allis_right1.png'), load_image('allis_right2.png')],
+            'right': [load_image('allis_left1.png'), load_image('allis_left2.png')]
+        }
+        self.direction = 'down'
+        self.image = self.images[self.direction][0]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x - 15, tile_height * pos_y - 2)
-
+        self.frame = 0
         self.pos = (pos_x, pos_y)
 
     def move(self, x, y):
         self.pos = (x, y)
         self.rect = self.image.get_rect().move(
             tile_width * self.pos[0] - 15, tile_height * self.pos[1] - 2)
+
+    def update_animation(self):
+        self.frame = (self.frame + 1) % 2
+        self.image = self.images[self.direction][self.frame]
+
+    def update_direction(self, direction):
+        self.direction = direction
+
+    def update(self):
+        self.update_animation()
 
 
 player = None
@@ -599,19 +616,24 @@ def go():
 
                 if event.key == pygame.K_w:
                     move(player, 'up')
+                    player.update_direction('up')
 
                 elif event.key == pygame.K_s:
                     move(player, 'down')
+                    player.update_direction('down')
 
                 elif event.key == pygame.K_a:
                     move(player, 'left')
+                    player.update_direction('left')
 
                 elif event.key == pygame.K_d:
                     move(player, 'right')
+                    player.update_direction('right')
 
                 elif event.key == pygame.K_e:
                     inventory()
 
+        player.update()
         screen.fill('black')
         tiles_group.draw(screen)
         player_group.draw(screen)
@@ -647,3 +669,4 @@ def go():
     pygame.quit()
 
 go()
+
