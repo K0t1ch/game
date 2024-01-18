@@ -16,7 +16,7 @@ screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 def load_image(name, colorkey=None):
     fullname = os.path.join("data", name)
-    # если файл не существует, то выходим
+
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -37,15 +37,13 @@ def terminate():
 
 
 def load_level(filename):
-    # читаем уровень, убирая символы перевода строки
+
     with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
+        game_map = [line.strip() for line in mapFile]
 
-    # и подсчитываем максимальную длину
-    max_width = max(map(len, level_map))
+    max_width = max(map(len, game_map))
 
-    # дополняем каждую строку пустыми клетками ('.')
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+    return list(map(lambda x: x.ljust(max_width, '.'), game_map))
 
 
 tile_images = {
@@ -99,28 +97,29 @@ player_group = pygame.sprite.Group()
 level_map = load_level('field_map.txt')
 
 
-def move(player, movement):
-    x, y = player.pos
+def move(model, movement):
+    x, y = model.pos
     if movement == 'up':
         if y > 0 and (level_map[round(y - 0.5)][round(x)] == '.' or level_map[round(y - 0.5)][round(x)] == '$' or
                       level_map[round(y - 0.5)][round(x)] == '@'):
-            player.move(x, y - 0.5)
+            model.move(x, y - 0.5)
 
     elif movement == 'down':
         if y < level_y - 1 and (level_map[round(y + 0.5)][round(x)] == '.' or level_map[round(y + 0.5)][round(x)] == '$'
                                 or level_map[round(y + 0.5)][round(x)] == '@'):
-            player.move(x, y + 0.5)
+            model.move(x, y + 0.5)
 
     elif movement == 'left':
         if x > 0 and (level_map[round(y)][round(x - 0.5)] == '.' or level_map[round(y)][round(x - 0.5)] == '$' or
                       level_map[round(y)][round(x - 0.5)] == '@'):
-            player.move(x - 0.5, y)
+            model.move(x - 0.5, y)
 
     elif movement == 'right':
         if x < level_x - 1 and (level_map[round(y)][round(x + 0.5)] == '.'
                                 or level_map[round(y)][round(x + 0.5)] == '@'):
-            player.move(x + 0.5, y)
+            model.move(x + 0.5, y)
         elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == ')':
+            # загружаем данные
             new_data = []
             f = open('save.txt', 'r')
             a = f.readlines()
@@ -129,7 +128,7 @@ def move(player, movement):
             for i in a:
                 new_data.append(i.strip('\n').strip('\n'))
 
-            new_data = list(map(lambda x: int(x), new_data))
+            new_data = list(map(lambda x_coordinate: int(x_coordinate), new_data))
 
             money[0] = new_data[0]
             health_b[0] = new_data[3]
@@ -217,10 +216,11 @@ def inventory():
                 terminate()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE or event.key == pygame.K_e:
-                    return  # начинаем игру
+                    return
 
         pygame.display.flip()
         clock.tick(FPS)
+
 
 def letsgo():
     running = True

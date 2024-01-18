@@ -8,6 +8,7 @@ from battle import game
 
 FPS = 50
 
+# переменная для инициализации покупки
 money = [1000]
 health_b = [0]
 shield_b = [0]
@@ -22,9 +23,6 @@ screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 def load_image(name, colorkey=None):
     fullname = os.path.join("data", name)
 
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
@@ -42,15 +40,12 @@ def terminate():
 
 
 def load_level(filename):
-    # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
+        map_main = [line.strip() for line in mapFile]
 
-    # и подсчитываем максимальную длину
-    max_width = max(map(len, level_map))
+    max_width = max(map(len, map_main))
 
-    # дополняем каждую строку пустыми клетками ('.')
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+    return list(map(lambda x: x.ljust(max_width, '.'), map_main))
 
 
 tile_images = {
@@ -121,15 +116,18 @@ player_group = pygame.sprite.Group()
 level_map = load_level('map.txt')
 
 
-def move(player, movement):
-    x, y = player.pos
+def move(model, movement):
+    x, y = model.pos
     if movement == 'up':
         if y > 0 and (level_map[round(y - 0.5)][round(x)] == '.' or level_map[round(y - 0.5)][round(x)] == '$' or
                       level_map[round(y - 0.5)][round(x)] == '@'):
-            player.move(x, y - 0.5)
+            model.move(x, y - 0.5)
 
         elif y > 0 and level_map[round(y - 0.5)][round(x)] == '>':
             all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
+
+            # записываем изменения в файл для последующей загрузки
+
             f = open('save.txt', 'w')
             for i in all_data:
                 f.write(f'{str(i)}\n')
@@ -145,10 +143,13 @@ def move(player, movement):
     elif movement == 'down':
         if y < level_y - 1 and (level_map[round(y + 0.5)][round(x)] == '.' or level_map[round(y + 0.5)][round(x)] == '$'
                                 or level_map[round(y + 0.5)][round(x)] == '@'):
-            player.move(x, y + 0.5)
+            model.move(x, y + 0.5)
 
         elif y < level_y - 1 and level_map[round(y + 0.5)][round(x)] == '>':
             all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
+
+            # записываем изменения в файл для последующей загрузки
+
             f = open('save.txt', 'w')
             for i in all_data:
                 f.write(f'{str(i)}\n')
@@ -156,20 +157,26 @@ def move(player, movement):
             letsgo()
 
         elif y < level_y - 1 and level_map[round(y + 0.5)][round(x)] == '!':
+            # открываем окно боя
             game('voin.png')
 
         elif y < level_y - 1 and level_map[round(y + 0.5)][round(x)] == '?':
+            # открываем окно боя
             game('a_kto.png')
 
     elif movement == 'left':
         if x > 0 and (level_map[round(y)][round(x - 0.5)] == '.' or level_map[round(y)][round(x - 0.5)] == '$' or
                       level_map[round(y)][round(x - 0.5)] == '@'):
-            player.move(x - 0.5, y)
+            model.move(x - 0.5, y)
 
         elif x > 0 and level_map[round(y)][round(x - 0.5)] == '*':
+            # вход в пещеру
             start()
 
         elif x > 0 and level_map[round(y)][round(x - 0.5)] == '&':
+
+            # загружаем полученную валюту
+
             f = open('money.txt', 'r')
             a = f.readline()
             f.close()
@@ -179,6 +186,9 @@ def move(player, movement):
             money.append(a1 + int(a) * 15)
 
         elif x > 0 and level_map[round(y)][round(x - 0.5)] == '>':
+
+            # записываем изменения в файл для последующей загрузки
+
             all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
             f = open('save.txt', 'w')
             for i in all_data:
@@ -187,17 +197,20 @@ def move(player, movement):
             letsgo()
 
         elif x > 0 and level_map[round(y)][round(x - 0.5)] == '!':
+            # открываем окно боя
             game('voin.png')
 
         elif x > 0 and level_map[round(y)][round(x - 0.5)] == '?':
+            # открываем окно боя
             game('a_kto.png')
 
     elif movement == 'right':
         if x < level_x - 1 and (level_map[round(y)][round(x + 0.5)] == '.'
                                 or level_map[round(y)][round(x + 0.5)] == '@'):
-            player.move(x + 0.5, y)
+            model.move(x + 0.5, y)
 
         elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '$':
+            # открываем магазин и подсказку
             what()
             shop()
 
@@ -208,6 +221,9 @@ def move(player, movement):
             game('a_kto.png')
 
         elif x < level_x - 1 and level_map[round(y)][round(x + 0.5)] == '>':
+
+            # записываем изменения в файл для последующей загрузки
+
             all_data = [money[0], attack_b[0], shield_b[0], health_b[0]]
             f = open('save.txt', 'w')
             for i in all_data:
@@ -258,12 +274,13 @@ class LoadSceneOne:
     def __init__(self):
         pass
 
-    def draw(self, screen):
+    @staticmethod
+    def draw(game_screen):
         fon = pygame.transform.scale(load_image('load_screen.jpg'), (1920, 1080))
-        screen.blit(fon, (0, 0))
+        game_screen.blit(fon, (0, 0))
 
         logo = pygame.transform.scale(load_image('logo.png'), (800, 600))
-        screen.blit(logo, (600, -50))
+        game_screen.blit(logo, (600, -50))
 
         intro_text = ["", "",
                       "",
@@ -281,8 +298,8 @@ class LoadSceneOne:
                       "Beta 1.0.9",
                       ]
 
-        pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
-        pygame.draw.rect(screen, 'white', (300, 590, 1250, 70), 5)
+        pygame.draw.rect(game_screen, 'blue', (300, 590, 1250, 70))
+        pygame.draw.rect(game_screen, 'white', (300, 590, 1250, 70), 5)
         font = pygame.font.Font(None, 80)
         text_coord = 70
         for line in intro_text:
@@ -292,22 +309,20 @@ class LoadSceneOne:
             intro_rect.top = text_coord
             intro_rect.x = 10
             text_coord += intro_rect.height
-            screen.blit(string_rendered, intro_rect)
-
-    def update(self, dt, events):
-        pass
+            game_screen.blit(string_rendered, intro_rect)
 
 
 class LoadSceneTwo:
     def __init__(self):
         pass
 
-    def draw(self, screen):
+    @staticmethod
+    def draw(game_screen):
         fon = pygame.transform.scale(load_image('load_screen2.jpg'), (1920, 1080))
-        screen.blit(fon, (0, 0))
+        game_screen.blit(fon, (0, 0))
 
         logo = pygame.transform.scale(load_image('logo.png'), (800, 600))
-        screen.blit(logo, (600, -50))
+        game_screen.blit(logo, (600, -50))
 
         intro_text = ["", "",
                       "",
@@ -325,8 +340,8 @@ class LoadSceneTwo:
                       "Beta 1.0.9",
                       ]
 
-        pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
-        pygame.draw.rect(screen, 'white', (300, 590, 1250, 70), 5)
+        pygame.draw.rect(game_screen, 'blue', (300, 590, 1250, 70))
+        pygame.draw.rect(game_screen, 'white', (300, 590, 1250, 70), 5)
         font = pygame.font.Font(None, 80)
         text_coord = 70
         for line in intro_text:
@@ -336,22 +351,20 @@ class LoadSceneTwo:
             intro_rect.top = text_coord
             intro_rect.x = 10
             text_coord += intro_rect.height
-            screen.blit(string_rendered, intro_rect)
-
-    def update(self, dt, events):
-        pass
+            game_screen.blit(string_rendered, intro_rect)
 
 
 class LoadSceneThree:
     def __init__(self):
         pass
 
-    def draw(self, screen):
+    @staticmethod
+    def draw(game_screen):
         fon = pygame.transform.scale(load_image('load_screen3.jpg'), (1920, 1080))
-        screen.blit(fon, (0, 0))
+        game_screen.blit(fon, (0, 0))
 
         logo = pygame.transform.scale(load_image('logo.png'), (800, 600))
-        screen.blit(logo, (600, -50))
+        game_screen.blit(logo, (600, -50))
 
         intro_text = ["", "",
                       "",
@@ -369,8 +382,8 @@ class LoadSceneThree:
                       "Beta 1.0.9",
                       ]
 
-        pygame.draw.rect(screen, 'blue', (300, 590, 1250, 70))
-        pygame.draw.rect(screen, 'white', (300, 590, 1250, 70), 5)
+        pygame.draw.rect(game_screen, 'blue', (300, 590, 1250, 70))
+        pygame.draw.rect(game_screen, 'white', (300, 590, 1250, 70), 5)
         font = pygame.font.Font(None, 80)
         text_coord = 70
         for line in intro_text:
@@ -380,10 +393,7 @@ class LoadSceneThree:
             intro_rect.top = text_coord
             intro_rect.x = 10
             text_coord += intro_rect.height
-            screen.blit(string_rendered, intro_rect)
-
-    def update(self, dt, events):
-        pass
+            game_screen.blit(string_rendered, intro_rect)
 
 
 class Fader:
@@ -401,15 +411,13 @@ class Fader:
             self.fading = 'OUT'
             self.alpha = 0
 
-    def draw(self, screen):
-        self.scene.draw(screen)
+    def draw(self, game_screen):
+        self.scene.draw(game_screen)
         if self.fading:
             self.veil.set_alpha(self.alpha)
-            screen.blit(self.veil, (0, 0))
+            game_screen.blit(self.veil, (0, 0))
 
-    def update(self, dt, events):
-        self.scene.update(dt, events)
-
+    def update(self):
         if self.fading == 'OUT':
             self.alpha += 8
             if self.alpha >= 255:
@@ -423,9 +431,8 @@ class Fader:
 
 def start_screen():
     screen_width, screen_height = 1920, 1080
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    clock = pygame.time.Clock()
-    dt = 0
+    game_screen = pygame.display.set_mode((screen_width, screen_height))
+
     fader = Fader([LoadSceneOne(), LoadSceneTwo(), LoadSceneThree()])
 
     while True:
@@ -439,11 +446,10 @@ def start_screen():
             if e.type == pygame.KEYDOWN or e.type == pygame.MOUSEBUTTONDOWN:
                 return
 
-        fader.draw(screen)
-        fader.update(dt, events)
+        fader.draw(game_screen)
+        fader.update()
 
         pygame.display.flip()
-        dt = clock.tick(30)
 
 
 # -------------------------------------------------------------------------------------------------------
@@ -473,7 +479,7 @@ def what():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN:
-                    return  # начинаем игру
+                return
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -668,5 +674,5 @@ def go():
 
     pygame.quit()
 
-go()
 
+go()

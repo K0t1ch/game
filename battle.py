@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 import os
-from field2 import health_b, attack_b, shield_b, money
+from field2 import health_b, attack_b, shield_b
 
 
 def start_new_turn(kartonochka, plus_m):
@@ -14,49 +14,48 @@ def start_new_turn(kartonochka, plus_m):
 
 def game(kartonochka):
     global player_health
+    # столько раз прибавятся монеты
     plus_m = [0]
 
+    # сюда записываем чем являются первая, вторая, третья и четвертая карты
     f_card = [0]
     s_card = [0]
     t_card = [0]
     fo_card = [0]
 
+    # для подсчёта монет
     k = 0
 
+    # чтобы карты пропадали (меняется прозрачность)
     fa = 500
     sa = 500
     ta = 500
     foa = 500
 
+    # сюда записываем чем являются первая, вторая, третья и четвертая карты у врага
     f_card_en = [0]
     s_card_en = [0]
     t_card_en = [0]
     fo_card_en = [0]
+
     # Инициализация Pygame
     pygame.init()
 
-    # Определение цветов
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-    RED = (255, 0, 0)
-
-
-    # Определение размеров окна
-    WIDTH, HEIGHT = 1920, 1080
+    # определяем можно ли ходить
     hod1 = True
     hod2 = True
     hod3 = True
     hod4 = True
-    # Создание окна
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Card Battle Field")
 
-    # Загрузка изображений
+    # Создание окна
+    screen = pygame.display.set_mode((1920, 1080))
+    pygame.display.set_caption("Card Battle Field")
 
     # Определение шрифтов
     font = pygame.font.Font(None, 36)
     # Инициализация игровых параметров
 
+    # проверяем на наличие предметов
     if shield_b[0] == 0 and health_b[0] == 0:
         player_health = 30
 
@@ -72,13 +71,9 @@ def game(kartonochka):
         damage = 20
     opponent_health = 30
 
-    # Функция для начала нового хода
     def load_image(name, colorkey=None):
         fullname = os.path.join("data", name)
-        # если файл не существует, то выходим
-        if not os.path.isfile(fullname):
-            print(f"Файл с изображением '{fullname}' не найден")
-            sys.exit()
+
         image = pygame.image.load(fullname)
         if colorkey is not None:
             image = image.convert()
@@ -92,8 +87,10 @@ def game(kartonochka):
     fon = pygame.transform.scale(load_image('fight.png'), (1920, 1080))
     screen.blit(fon, (0, 0))
 
+    # для раздачи карт
     cards = ['attack_c.png', 'shield_c.png', 'health_c.png', 'attack_c.png', 'attack_c.png']
 
+    # положение всех карт
     x1 = 380
     x2 = 680
     x3 = 980
@@ -105,11 +102,13 @@ def game(kartonochka):
     xt = x3
     xf = x4
 
+    # выбираем случайные карты игроку
     f = random.choice(cards)
     s = random.choice(cards)
     t = random.choice(cards)
     fo = random.choice(cards)
 
+    # выбираем случайные карты врагу
     alls = ['attack_c.png', 'shield_c.png', 'health_c.png']
     one1 = random.choice(alls)
     one2 = random.choice(alls)
@@ -121,6 +120,7 @@ def game(kartonochka):
     while running:
 
         for event in pygame.event.get():
+            # создаём интерфейс
             first = pygame.transform.scale(load_image(f), (260, 280))
             first.set_alpha(fa)
             screen.blit(first, (380, 900))
@@ -207,6 +207,7 @@ def game(kartonochka):
                 fo_card_en.append('heal')
 
             # ---------------------------
+            # генерируем карты противника
 
             card1 = pygame.transform.scale(load_image('closed.png'), (260, 280))
             screen.blit(card1, (xo, -140))
@@ -272,6 +273,8 @@ def game(kartonochka):
                 fo_card.clear()
                 fo_card.append('heal')
 
+            # если игрок умер - ходить нельзя
+            # если оппонент умер - записываем выигрыш и ходить опять нельзя
             if player_health <= 0:
                 hod2 = hod3 = hod4 = hod1 = False
 
@@ -292,6 +295,7 @@ def game(kartonochka):
                 if event.key == pygame.K_ESCAPE:
                     return
 
+                # цикл игры
                 elif event.key == pygame.K_1 and hod1:
                     if player_health <= 0 or opponent_health <= 0:
                         player_health = opponent_health = 0
@@ -306,6 +310,7 @@ def game(kartonochka):
                     one4_card.set_alpha(0)
                     hod1 = False
                     screen.blit(one2_card, (500, 400))
+                    # здесь и далее прописана логика действия карт
                     if f_card[0] == 'att':
                         if s_card_en[0] == 'att':
                             player_health -= damage
@@ -316,7 +321,6 @@ def game(kartonochka):
 
                         else:
                             opponent_health -= 10
-
                     # если атака--------------------------------------------------------------------------------
 
                     elif f_card[0] == 'def':
@@ -328,7 +332,6 @@ def game(kartonochka):
 
                         else:
                             opponent_health += 5
-
                     # если защита--------------------------------------------------------------------------------
 
                     else:
@@ -341,7 +344,7 @@ def game(kartonochka):
                         else:
                             player_health += 5
                             opponent_health += 5
-                # если хилл--------------------------------------------------------------------------------
+                    # если хилл--------------------------------------------------------------------------------
 
                 elif event.key == pygame.K_2 and hod2:
                     if player_health <= 0 or opponent_health <= 0:
@@ -390,7 +393,6 @@ def game(kartonochka):
                         else:
                             player_health += 5
                             opponent_health += 5
-
                 # если хилл--------------------------------------------------------------------------------
 
                 elif event.key == pygame.K_3 and hod3:
@@ -416,7 +418,6 @@ def game(kartonochka):
 
                         else:
                             opponent_health -= 10
-
                     # если атака--------------------------------------------------------------------------------
 
                     elif t_card[0] == 'def':
@@ -428,7 +429,6 @@ def game(kartonochka):
 
                         else:
                             opponent_health += 5
-
                     # если защита--------------------------------------------------------------------------------
 
                     else:
@@ -489,9 +489,10 @@ def game(kartonochka):
                         else:
                             player_health += 5
                             opponent_health += 5
-                # если хилл--------------------------------------------------------------------------------
+                # если хилл-------------------------------------------------------------------------------
+        # рисуем кнопку рестарта
         end_turn_button = pygame.draw.rect(screen, (0, 255, 0), (0, 1000, 300, 75))
-        text = font.render("Заново", True, BLACK)
+        text = font.render("Заново", True, (0, 0, 0))
         screen.blit(text, (10, 1020))
 
         if end_turn_button.collidepoint(pygame.mouse.get_pos()):
@@ -499,9 +500,9 @@ def game(kartonochka):
                 start_new_turn(kartonochka, plus_m)
 
         font = pygame.font.Font(None, 50)
-        pygame.draw.rect(screen, RED, (50, 45, 258, 75))  # Индикатор здоровья
+        pygame.draw.rect(screen, (255, 0, 0), (50, 45, 258, 75))  # Индикатор здоровья
 
-        text = font.render(f"Здоровье: {player_health}", True, WHITE)
+        text = font.render(f"Здоровье: {player_health}", True, (255, 255, 255))
         screen.blit(text, (50, 70))
 
         att = pygame.transform.scale(load_image('attack_c.png'), (260, 280))
@@ -510,9 +511,9 @@ def game(kartonochka):
         opponent_portrait = pygame.transform.scale(load_image(f'{kartonochka}'), (150, 150))
 
         # Отрисовка оппонента
-        screen.blit(opponent_portrait, (WIDTH - 210, 45))
-        pygame.draw.rect(screen, RED, (1600, 350, 1620, 75))  # Индикатор здоровья
-        text = font.render(f"Здоровье: {opponent_health}", True, WHITE)
+        screen.blit(opponent_portrait, (1710, 45))
+        pygame.draw.rect(screen, (255, 0, 0), (1600, 350, 1620, 75))  # Индикатор здоровья
+        text = font.render(f"Здоровье: {opponent_health}", True, (255, 255, 255))
         screen.blit(text, (1630, 370))
 
         pygame.display.flip()

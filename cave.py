@@ -12,12 +12,12 @@ attack_b = [0]
 pygame.init()
 size = width, height = 0, 1080
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((size), pygame.FULLSCREEN)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 
 def load_image(name, colorkey=None):
     fullname = os.path.join("data", name)
-    # если файл не существует, то выходим
+
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -38,15 +38,13 @@ def terminate():
 
 
 def load_level(filename):
-    # читаем уровень, убирая символы перевода строки
+
     with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
+        game_map = [line.strip() for line in mapFile]
 
-    # и подсчитываем максимальную длину
-    max_width = max(map(len, level_map))
+    max_width = max(map(len, game_map))
 
-    # дополняем каждую строку пустыми клетками ('.')
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+    return list(map(lambda x: x.ljust(max_width, '.'), game_map))
 
 
 tile_images = {
@@ -93,8 +91,8 @@ player_group = pygame.sprite.Group()
 level_map = load_level('cave.txt')
 
 
-def move(player, movement):
-    x, y = player.pos
+def move(model, movement):
+    x, y = model.pos
     if movement == 'up':
         pass
 
@@ -104,25 +102,12 @@ def move(player, movement):
     elif movement == 'left':
         if x > 0 and (level_map[round(y)][round(x - 0.5)] == '.' or level_map[round(y)][round(x - 0.5)] == '>' or
                       level_map[round(y)][round(x - 0.5)] == '@'):
-            player.move(x - 0.5, y)
+            model.move(x - 0.5, y)
 
     elif movement == 'right':
         if x < level_x - 1 and (level_map[round(y)][round(x + 0.5)] == '.' or level_map[round(y)][round(x + 0.5)] == '>'
                                 or level_map[round(y)][round(x + 0.5)] == '@'):
-            player.move(x + 0.5, y)
-
-
-
-
-
-
-
-
-
-
-
-
-
+            model.move(x + 0.5, y)
 
 
 def generate_level(level):
